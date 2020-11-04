@@ -11,7 +11,7 @@ using namespace cv;
 using namespace std;
 vector<Mat> putMat(const string& str);
 
-int main()
+int maintxt()
 {
 
    vector<Mat> HVSFTMAT = putMat("/home/pmj-nano/Desktop/1103/");
