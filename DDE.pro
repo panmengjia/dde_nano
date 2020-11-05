@@ -16,7 +16,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp \
     main2.cpp \
-    mian3.cpp
+    mian3.cpp \
+    main4.cpp
 
 
 LIBS += /usr/lib/aarch64-linux-gnu/libopencv_*

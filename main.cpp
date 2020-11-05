@@ -8,7 +8,7 @@ using namespace std;
 vector<Mat> extractConvMat();
 void ycbcrUpdate(const Mat& IM_result_cbcr,const Mat& IM_bri_T ,Mat& IM_result_cbcr_re);
 
-int main()
+int mainmain()
 {
     VideoCapture* cap = new VideoCapture("/home/pmj-nano/Desktop/1103/130 (2).avi");
     if(!cap->isOpened())
