@@ -1,11 +1,12 @@
 #include <opencv.hpp>
 #include <iostream>
+#include <math.h>
 
 using namespace cv;
 using namespace std;
 
 
-int main__()
+int mainfilter()
 {
 //    Mat src = Mat_<unsigned int>(2,2)<<[1,2,3,4];
     float a[] = {1,2,3,4};
@@ -23,6 +24,7 @@ int main__()
         }
         cout <<endl;
     }
+    printf("%lf\n",pow(2,3));
 
     return 0;
 }

@@ -5,10 +5,10 @@
 using namespace cv;
 using namespace std;
 
-vector<Mat> extractConvMat();
-void ycbcrUpdate(const Mat& IM_result_cbcr,const Mat& IM_bri_T ,Mat& IM_result_cbcr_re);
+vector<Mat> extractConvMat_();
+void ycbcrUpdate_(const Mat& IM_result_cbcr,const Mat& IM_bri_T ,Mat& IM_result_cbcr_re);
 
-int mainmain()
+int mainmainmain()
 {
     VideoCapture* cap = new VideoCapture("/home/pmj-nano/Desktop/1103/130 (2).avi");
     if(!cap->isOpened())
@@ -34,13 +34,14 @@ int mainmain()
     double thresholdRate;
     //
     Mat HSFAT = Mat::zeros(85,85,CV_64FC1);
-    vector<Mat> hsfatMat = extractConvMat(); //H_S_f_A_T
+    vector<Mat> hsfatMat = extractConvMat_(); //H_S_f_A_T
     Mat IM_bri_T;
     //
     while(cap->read(frame))  //type CV_8UC3
     {
         double time = getTickCount();
-        cout <<"frame.type():"<<frame.type()<<endl;
+//        cout <<"frame.type():"<<frame.type()<<endl;
+        frame.convertTo(frame,CV_32FC3);
         meanStdDev(frame,meanFrame,stdDevFrame);  
         mean /*results_de_mean*/= (meanFrame.at<Vec3d>(0,0)[0] + meanFrame.at<Vec3d>(0,0)[1] + meanFrame.at<Vec3d>(0,0)[2])/3;
 //        cout <<"mean:"<<mean<<endl;
@@ -52,7 +53,7 @@ int mainmain()
 //        IM_bri_T_var = var(IM_bri(:));
         meanStdDev(singleChannel,meanBri,stdDevBri);
 //          threshold_rate = IM_bri_T_mean/IM_bri_T_var*IM_bri_T_mean/80;
-        thresholdRate = meanBri.at<double>(0,0)/stdDevBri.at<double>(0,0)*meanBri.at<double>(0,0)/80;
+        thresholdRate = meanBri.at<double>(0,0)/pow(stdDevBri.at<double>(0,0),2)*meanBri.at<double>(0,0)/80;
 //        threshold_rate = threshold_rate + 0.2;
         thresholdRate +=0.2;
         
@@ -71,11 +72,12 @@ int mainmain()
 
 //        IM_bri_T = conv2(IM_bri_T,H_S_f_A_T,'same')*1;%进行卷积运算
 
-        filter2D(IM_bri_T,IM_bri_T,CV_64FC1,H_S_f_A_T);
+        filter2D(IM_bri_T,IM_bri_T,CV_64FC1,hsfatMat[floor(thresholdRate*10)]);
         Mat meanOfIM_bri_T,stdDevOfIM_bri_T;
         meanStdDev(IM_bri_T,meanOfIM_bri_T,stdDevOfIM_bri_T);
 //            IM_bri_T = single(IM_bri_T/mean(IM_bri_T(:))*IM_bri_T_mean/1.5);%调整颜色
         IM_bri_T = IM_bri_T/meanOfIM_bri_T.at<double>(0,0)*meanBri.at<double>(0,0)/1.5;
+        IM_bri_T.convertTo(IM_bri_T,CV_32FC1);
 
 //        IM_result_cbcr = single(rgb2ycbcr(uint8(IM_result)));%将输入图片rgb转ycbcr
 //        IM_result_cbcr(:,:,1) = single(IM_bri_T);%更新y通道的数值
@@ -84,7 +86,7 @@ int mainmain()
         Mat IM_result_cbcr;
         cvtColor(frame,IM_result_cbcr,COLOR_BGR2YCrCb);
         Mat IM_result_cbcr_re;
-        ycbcrUpdate(IM_result_cbcr, IM_bri_T, IM_result_cbcr_re);
+        ycbcrUpdate_(IM_result_cbcr, IM_bri_T, IM_result_cbcr_re);
 
 //        results_de = single(IM_result_cbcr_re);
 //        results_de = uint8(results_de/mean(results_de(:))*results_de_mean);
@@ -99,7 +101,7 @@ int mainmain()
     return 0;
 }
 
-void ycbcrUpdate(const Mat& IM_result_cbcr,const Mat& IM_bri_T ,Mat& IM_result_cbcr_re)
+void ycbcrUpdate_(const Mat& IM_result_cbcr,const Mat& IM_bri_T ,Mat& IM_result_cbcr_re)
 {
    vector<Mat> channelsOfIM;
 
@@ -107,21 +109,21 @@ void ycbcrUpdate(const Mat& IM_result_cbcr,const Mat& IM_bri_T ,Mat& IM_result_c
     split(IM_result_cbcr,channelsOfIM);
 //    cout <<"channelsOfIM[0].type():"<<channelsOfIM[0].type()<<endl;
 //    cout <<"IM_bri_T.type():"<<IM_bri_T.type()<<endl;
-    Mat IM_bri_T_8U;
-    IM_bri_T.convertTo(IM_bri_T_8U,CV_8UC1);
-    channelsOfIM[0] = IM_bri_T_8U;
+//    Mat IM_bri_T_8U;
+//    IM_bri_T.convertTo(IM_bri_T_8U,CV_8UC1);
+    channelsOfIM[0] = IM_bri_T;
     merge(channelsOfIM,IM_result_cbcr_re);
     cvtColor(IM_result_cbcr_re,IM_result_cbcr_re,COLOR_YCrCb2BGR);
 
 }
 
-vector<Mat> extractConvMat()
+vector<Mat> extractConvMat_()
 {
     const string& str = "/home/pmj-nano/Desktop/1103/";
     vector<vector<double>> HVSFT;
     HVSFT.resize(15);
 //    unsigned int counter = 0;
-    for(int i = 1;i< 16;i++)
+    for(int i = 1; i < 16; i++)
     {
         ifstream dataFile(str+to_string(i)+".txt");
         double dataElement;

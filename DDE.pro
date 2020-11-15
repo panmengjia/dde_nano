@@ -14,14 +14,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-SOURCES += main.cpp \
-    main2.cpp \
+SOURCES += \
     mian3.cpp \
-    main4.cpp
+    main2.cpp \
+    main.cpp \
+    main4.cpp \
+    main6.cpp \
 
 
 LIBS += /usr/lib/aarch64-linux-gnu/libopencv_*
 
 INCLUDEPATH += \
                /usr/include/opencv4 \
-               /usr/include/opencv4/opencv2
+               /usr/include/opencv4/opencv2 \
+
+
+
